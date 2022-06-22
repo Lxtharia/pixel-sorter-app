@@ -19,7 +19,6 @@ public class OptionPanel extends JFrame {
     private JButton ButtonDownRight;
     private JButton saveButton;
     private JSlider slider;
-    private JTextField fieldValue1;
     private JPanel mainPanel;
     private JList<Selector> selectorList;
     private JButton saveAsButton;
@@ -167,9 +166,6 @@ public class OptionPanel extends JFrame {
         setVisible(true);
     }
 
-    private boolean checkIfBelow(int val) {
-        return (val <= (Integer) spinner1.getValue());
-    }
 
     private void updateSelectorValueStart(int newValue) {
         //check if this slider or spinner would go above the other spinner
@@ -205,8 +201,8 @@ public class OptionPanel extends JFrame {
     }
 
     public void updateValueUI() {
-        slider.setValue((int) pixelSorter.getSelector().getStart());
-        slider2.setValue((int) pixelSorter.getSelector().getEnd());
+        slider.setValue(pixelSorter.getSelector().getStart());
+        slider2.setValue(pixelSorter.getSelector().getEnd());
         spinner1.setValue(pixelSorter.getSelector().getStart());
         spinner2.setValue(pixelSorter.getSelector().getEnd());
     }
@@ -214,14 +210,14 @@ public class OptionPanel extends JFrame {
     private void createUIComponents() {
         // TODO: place custom component creation code here
 
-        selectorList = new JList<Selector>(new myListModel());
+        selectorList = new JList<>(new myListModel());
         selectorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         selectorList.setCellRenderer(new myListCellRenderer());
 //        selectorList = new JList<String>(new String[]{"Hallo", "Tschüss", "Maybe"});
         selectorList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                pixelSorter.setSelector((Selector) selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
+                pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
                 updateSelectorValueStart(pixelSorter.getSelector().start);
                 updateSelectorValueEnd(pixelSorter.getSelector().end);
                 //TODO: change slider max and min

@@ -209,7 +209,6 @@ public class PixelSorter {
 
     public void setImg(PImage _img) {
         this.img = _img.copy();
-        sketch.drawAgain();
     }
 
     public void setSelector(Selector pixelSelector) {

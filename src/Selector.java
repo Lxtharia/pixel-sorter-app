@@ -1,7 +1,7 @@
-import processing.core.PApplet;
+
 
 public abstract class Selector {
-    static PApplet sketch;
+    static MyPixelSortApp sketch;
     protected int start;
     protected int end;
     protected int min;
@@ -31,6 +31,7 @@ public abstract class Selector {
     public void shiftRange(int val) {
         this.start += val;
         this.end += val;
+        sketch.drawAgain();
     }
 
     //======GETTER/SETTER=======
@@ -41,7 +42,7 @@ public abstract class Selector {
 
     public void setStart(int start) {
         this.start = start;
-        sketch.redraw();
+        sketch.drawAgain();
     }
 
     public int getEnd() {
@@ -50,8 +51,12 @@ public abstract class Selector {
 
     public void setEnd(int end) {
         this.end = end;
-        sketch.redraw();
+        sketch.drawAgain();
     }
+
+    //if i set start and end should automatically adjust? //Leaving this here cause maybe maybe i might need it again H
+    //this.end = val + (end-start);
+    //this.start = val;
 
     public int getMin() {
         return min;
@@ -59,6 +64,7 @@ public abstract class Selector {
 
     public void setMin(int min) {
         this.min = min;
+        sketch.drawAgain();
     }
 
     public int getMax() {
@@ -67,6 +73,7 @@ public abstract class Selector {
 
     public void setMax(int max) {
         this.max = max;
+        sketch.drawAgain();
     }
 
 

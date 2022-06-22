@@ -16,7 +16,8 @@ public class MyPixelSortApp extends PApplet {
     private PImage img;
     PixelSorter sorter;
     OptionPanel optionPanel;
-    private int shouldSurfaceHeight = 500;
+    private int shouldSurfaceHeight;
+    private boolean surfaceSizeIsOneToOne;
     private boolean doDraw = true;
     //int loops = 1;
 
@@ -25,18 +26,19 @@ public class MyPixelSortApp extends PApplet {
         //give all the Selectors this sketch so they have use Processing functions etc (it needs to be an instance for colorMode etc)
         Selector.sketch = this;
 
-        //Load and set originalSizedImg
-        loadAndSetImg("mousepad", "jpg");
+        //Load and set originalSizedImg and set surface size
+        loadAndSetImg("default", "png");
+        shouldSurfaceHeight = 600;
+        surfaceSizeIsOneToOne = false;
 
         //sorter and OptionPanel
-        sorter = new PixelSorter(this, new Selectors.HueSelector(), originalImg);
+        sorter = new PixelSorter(this, new Selectors.HueSelector(125, 200), originalImg);
         optionPanel = new OptionPanel(this, sorter);
 
         // allow resize and update surface to image dimensions
         surface.setResizable(false);
         surface.setLocation(500, 10);
-
-        resizeSurface(800);
+        updateSurfaceSize();
 //        noLoop();
     }
 
@@ -45,41 +47,56 @@ public class MyPixelSortApp extends PApplet {
     public void loadAndSetImg(String filename, String extention) {
         originalSizedImg = loadImage(filename + "." + extention);
         originalImg = originalSizedImg.copy();
-        resizeSurface();
+        updateSurfaceSize();
     }
 
-    private void resizeImg(int newHeight) {
-        //for low res stuff idk
-        originalImg = originalSizedImg.copy();
-        originalImg.resize((newHeight * originalSizedImg.width) / originalSizedImg.height, newHeight);
-        //the ratio stays the same hOh
-    }
-
-    public void resizeSurface() {
-        resizeSurface(shouldSurfaceHeight);
-    }
-
-    public void resizeSurface(int newHeight) {
-        if (newHeight >= 128) {
-            //Resized
-            surface.setSize((newHeight * originalImg.width) / originalImg.height, newHeight);
-        } else if (newHeight <= 0) {
-            //100%
+    //cause this takes current surfaceHeight and calculates depending on setImg ratio (yea)
+    //and takes current surfaceSizeIsOneToOne to decide if to show 1:1 or not
+    public void updateSurfaceSize() {
+        if (surfaceSizeIsOneToOne) {
             surface.setSize(originalImg.width, originalImg.height);
-        } else
-            System.out.println("Doing nothing. Set to someting bigger than 128px or <= 0 to show image 1:1");
-
+        } else {
+            surface.setSize((shouldSurfaceHeight * originalImg.width) / originalImg.height, shouldSurfaceHeight);
+        }
+        drawAgain();
     }
 
+    public void setSurfaceSizeOneToOne(boolean fullSize) {
+        surfaceSizeIsOneToOne = fullSize;
+        updateSurfaceSize();
+    }
 
-    private void setShouldSurfaceHeight(int newHeight) {
-        if (newHeight >= 128 || newHeight <= 0) {
+    public boolean surfaceSizeIsOneToOne() {
+        return surfaceSizeIsOneToOne;
+    }
+
+    public boolean resizeSurfaceToHeight(int newHeight) {
+        if (newHeight >= 128 && newHeight <= 3000) {
+            //Resized
             shouldSurfaceHeight = newHeight;
-        } else System.out.println("Set to someting bigger than 128px or <= 0 to show image 1:1");
+            updateSurfaceSize();
+            return true;
+        } else {
+            System.out.println("Invalid new height :(");
+            return false;
+        }
     }
 
+    public int getSurfaceHeight() {
+        return shouldSurfaceHeight;
+    }
+
+//    private void resizeImg(int newHeight) {
+//        //for low res stuff idk
+//        originalImg = originalSizedImg.copy();
+//        originalImg.resize((newHeight * originalSizedImg.width) / originalSizedImg.height, newHeight);
+//        //the ratio stays the same hOh
+//    }
 
     //========DRAW========
+    public void drawAgain() {
+        doDraw = true;
+    }
 
     public void draw() {
         if (doDraw || mousePressed) {
@@ -111,9 +128,7 @@ public class MyPixelSortApp extends PApplet {
         drawAgain();
     }
 
-    public void drawAgain(){
-        doDraw = true;
-    }
+    //==============MAIN AND SETTING===============
 
     public void settings() {
         // use only numbers (not variables) for the size() command, Processing 3

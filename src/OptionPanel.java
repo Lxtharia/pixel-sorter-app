@@ -69,29 +69,30 @@ public class OptionPanel extends JFrame {
                 sketchApplet.saveImg();
             }
         });
+
         //Window Changer SpinnerField
-        windowHeightSpinner.setModel(new SpinnerNumberModel(800, 128, 3000, 30));
+        if (!sketchApplet.surfaceSizeIsOneToOne())
+            windowHeightSpinner.setModel(new SpinnerNumberModel(sketchApplet.getSurfaceHeight(), 128, 3000, 30));
         windowHeightSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                System.out.println("windowchangespinner changed lmao");
                 int val = (int) windowHeightSpinner.getValue();
-//                if (val < 128)
-//                    windowHeightSpinner.setValue(80);
-//                else if (val > 3000)
-//                    windowHeightSpinner.setValue(3000);
-                sketchApplet.resizeSurface(val);
+                if (!sketchApplet.resizeSurfaceToHeight(val))
+                    windowHeightSpinner.setValue(sketchApplet.getSurfaceHeight());
             }
         });
-        windowHeightSpinner.firePropertyChange("value", 0, 800);
+//        windowHeightSpinner.firePropertyChange("value", 0, 800);
+
         //Windowsize checkbox
         originalSizeCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (originalSizeCheckBox.isSelected()) {
                     windowHeightSpinner.setEnabled(false);
-                    sketchApplet.resizeSurface(-1);
+                    sketchApplet.setSurfaceSizeOneToOne(true);
                 } else {
-                    sketchApplet.resizeSurface((Integer) windowHeightSpinner.getValue());
+                    sketchApplet.setSurfaceSizeOneToOne(false);
                     windowHeightSpinner.setEnabled(true);
                 }
             }
@@ -161,7 +162,6 @@ public class OptionPanel extends JFrame {
         });
 
 
-
         //END OF YEAH
         pack();
         setVisible(true);
@@ -175,7 +175,7 @@ public class OptionPanel extends JFrame {
         //check if this slider or spinner would go above the other spinner
         if (newValue >= pixelSorter.getSelector().getEnd()) {
             //if so, push the others one up
-            updateSelectorValueEnd(newValue+1);
+            updateSelectorValueEnd(newValue + 1);
 //            newValue--; /* uncommenting this and removing the +1 above makes it so
 //            the value that would be pushed to be dominant (spinners cant push, sliders can't push the other below 0)
 
@@ -187,12 +187,13 @@ public class OptionPanel extends JFrame {
         slider.setValue(newValue);
         spinner1.setValue(newValue);
     }
+
     //sets slider2 and spinner2
     private void updateSelectorValueEnd(int newValue) {
         //check if this slider2 or spinner2 would go below the other sliders value
         if (newValue <= pixelSorter.getSelector().getStart()) {
             //if so, push the others below
-            updateSelectorValueStart(newValue-1);
+            updateSelectorValueStart(newValue - 1);
 //            newValue++;
         }
         pixelSorter.getSelector().setEnd(newValue);
@@ -221,8 +222,9 @@ public class OptionPanel extends JFrame {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 pixelSorter.setSelector((Selector) selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
+                updateSelectorValueStart(pixelSorter.getSelector().start);
+                updateSelectorValueEnd(pixelSorter.getSelector().end);
                 //TODO: change slider max and min
-                //TODO:
             }
         });
     }

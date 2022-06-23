@@ -1,5 +1,6 @@
 import processing.core.*;
 import processing.event.*;
+import javax.swing.*;
 
 public class MyPixelSortApp extends PApplet {
     /********
@@ -19,6 +20,7 @@ public class MyPixelSortApp extends PApplet {
     private int shouldSurfaceHeight;
     private boolean surfaceSizeIsOneToOne;
     private boolean doDraw = true;
+    private boolean defaultImgIsSet = true;
     //int loops = 1;
 
     public void setup() {
@@ -27,7 +29,8 @@ public class MyPixelSortApp extends PApplet {
         Selector.sketch = this;
 
         //Load and set originalSizedImg and set surface size
-        loadAndSetImg("default", "png");
+        loadAndSetImg("default.png");
+        defaultImgIsSet = true;
         shouldSurfaceHeight = 600;
         surfaceSizeIsOneToOne = false;
 
@@ -44,10 +47,11 @@ public class MyPixelSortApp extends PApplet {
 
     //=======CONFUSION=======
 
-    public void loadAndSetImg(String filename, String extention) {
-        originalSizedImg = loadImage(filename + "." + extention);
+    public void loadAndSetImg(String filepath) {
+        originalSizedImg = loadImage(filepath);
         originalImg = originalSizedImg.copy();
         updateSurfaceSize();
+        defaultImgIsSet = false;
     }
 
     //cause this takes current surfaceHeight and calculates depending on setImg ratio (yea)
@@ -102,7 +106,7 @@ public class MyPixelSortApp extends PApplet {
         if (doDraw || mousePressed) {
             doDraw = false;
 //            println("draw", frameRate, sorter.getSelector().getEnd());
-            if (mousePressed) {
+            if (mousePressed && !defaultImgIsSet) {
                 image(sorter.visualizeSelection(originalImg), 0, 0, width, height);
             } else {
                 img = sorter.sortImg(originalImg);
@@ -128,14 +132,28 @@ public class MyPixelSortApp extends PApplet {
         drawAgain();
     }
 
+    public void mouseClicked(){
+        if(defaultImgIsSet) {
+            //TODO: Open file dialoge :>
+            println("yes yes, we are selecting an img now lolll");
+            optionPanel.chooseFile();
+        }
+    }
+
     //==============MAIN AND SETTING===============
 
     public void settings() {
         // use only numbers (not variables) for the size() command, Processing 3
         size(1, 1);
+        noSmooth();
     }
 
     static public void main(String[] passedArgs) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String[] appletArgs = new String[]{"MyPixelSortApp"};
         if (passedArgs != null) {
             PApplet.main(concat(appletArgs, passedArgs));

@@ -3,12 +3,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 public class OptionPanel extends JFrame {
     private JButton selectButton;
-    private JTextField textField1;
+    private JTextField pathField;
     private JButton ButtonUpLeft;
     private JButton ButtonLEFT;
     private JButton ButtonDownLeft;
@@ -49,10 +51,23 @@ public class OptionPanel extends JFrame {
                 dispose();
             }
         });
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowIconified(WindowEvent e) {
+                super.windowIconified(e);
+            }
 
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                super.windowDeiconified(e);
+            }
+        });
         //================COOL YEAH====================
 
+        pathField.setEditable(false);
 
+
+        //TODO: Button Group that shows selected
         ButtonUP.addActionListener(new DirectionListener(xDirection.None, yDirection.Up));
         ButtonUpRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Up));
         ButtonRIGHT.addActionListener(new DirectionListener(xDirection.Right, yDirection.None));
@@ -71,7 +86,7 @@ public class OptionPanel extends JFrame {
 
         //Window Changer SpinnerField
         if (!sketchApplet.surfaceSizeIsOneToOne())
-            windowHeightSpinner.setModel(new SpinnerNumberModel(sketchApplet.getSurfaceHeight(), 128, 3000, 30));
+            windowHeightSpinner.setModel(new SpinnerNumberModel(sketchApplet.getSurfaceHeight(), 128, 3000, 50));
         windowHeightSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -114,7 +129,6 @@ public class OptionPanel extends JFrame {
                 if (!updateInProgress) {
                     updateInProgress = true;
                     updateSelectorValueStart(slider.getValue());
-                    System.out.println("Slider  changed - " + slider.getValue());
                     updateInProgress = false;
                 }
             }
@@ -128,8 +142,6 @@ public class OptionPanel extends JFrame {
                     int newValue = slider2.getValue();
                     //if it would go
                     updateSelectorValueEnd(newValue);
-
-                    System.out.println("Slider2 changed - " + slider2.getValue());
                     updateInProgress = false;
                 }
             }
@@ -141,7 +153,6 @@ public class OptionPanel extends JFrame {
                 if (!updateInProgress) {
                     updateInProgress = true;
                     updateSelectorValueStart((Integer) spinner1.getValue());
-                    System.out.println("spinner 1 changed! " + spinner1.getValue());
                     updateInProgress = false;
                 }
             }
@@ -152,11 +163,17 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {     //so if something else changes values, this wont fire
                     updateInProgress = true;        //Hello, im the one updating :>
-
                     updateSelectorValueEnd((Integer) spinner2.getValue());
-                    System.out.println("spinner 2 changed! " + spinner2.getValue());
                     updateInProgress = false;
                 }
+            }
+        });
+
+
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chooseFile();
             }
         });
 
@@ -171,9 +188,10 @@ public class OptionPanel extends JFrame {
         //check if this slider or spinner would go above the other spinner
         if (newValue >= pixelSorter.getSelector().getEnd()) {
             //if so, push the others one up
-            updateSelectorValueEnd(newValue + 1);
-//            newValue--; /* uncommenting this and removing the +1 above makes it so
-//            the value that would be pushed to be dominant (spinners cant push, sliders can't push the other below 0)
+            updateSelectorValueEnd(newValue + 0);
+            newValue--; // uncommenting this and removing the +1 above makes it so
+/*          the value that would be pushed to be dominant (spinners cant push, sliders can't push the other below 0)
+            If they CAN push, it stackoverflows because the spinner can overflow the integers */
 
         }
         pixelSorter.getSelector().setStart(newValue);
@@ -189,8 +207,8 @@ public class OptionPanel extends JFrame {
         //check if this slider2 or spinner2 would go below the other sliders value
         if (newValue <= pixelSorter.getSelector().getStart()) {
             //if so, push the others below
-            updateSelectorValueStart(newValue - 1);
-//            newValue++;
+            updateSelectorValueStart(newValue - 0);
+            newValue++;
         }
         pixelSorter.getSelector().setEnd(newValue);
         //If something changed
@@ -218,11 +236,35 @@ public class OptionPanel extends JFrame {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
-                updateSelectorValueStart(pixelSorter.getSelector().start);
-                updateSelectorValueEnd(pixelSorter.getSelector().end);
+                updateSelectorValueStart(pixelSorter.getSelector().getStart());
+                updateSelectorValueEnd(pixelSorter.getSelector().getEnd());
                 //TODO: change slider max and min
             }
         });
+    }
+
+    void chooseFile() {
+        JFileChooser fc = new JFileChooser();
+        fc.removeChoosableFileFilter(fc.getChoosableFileFilters()[0]);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Processing compatible image formats", "png", "jpg"));
+        fc.setCurrentDirectory(new File("."));
+        fc.setFileHidingEnabled(true);
+
+        int returnVal = fc.showOpenDialog(OptionPanel.this);
+        fc.setVisible(true);
+
+        try {
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File f = fc.getSelectedFile();
+                String path = f.getPath();
+                System.out.println(path);
+                sketchApplet.loadAndSetImg(path);
+                pathField.setText(path);
+                pathField.setSelectionEnd(path.length() - 1);
+            }
+        } catch (Exception ex) {
+            System.out.println("Error :(\n" + ex);
+        }
     }
 
 
@@ -327,9 +369,9 @@ public class OptionPanel extends JFrame {
         selectButton = new JButton();
         selectButton.setText("Select...");
         panel7.add(selectButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        textField1 = new JTextField();
-        textField1.setColumns(20);
-        panel7.add(textField1, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        pathField = new JTextField();
+        pathField.setColumns(20);
+        panel7.add(pathField, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Window Height");
         panel7.add(label2, new com.intellij.uiDesigner.core.GridConstraints(1, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

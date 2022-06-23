@@ -54,7 +54,6 @@ public abstract class Selectors {
 
 
     static class SaturationSelector extends Selector {
-        // sort all pixels whiter than the threshold
         SaturationSelector() {
             super(0, 127);
         }
@@ -67,7 +66,6 @@ public abstract class Selectors {
 
 
     static class BrightnessSelector extends Selector {
-        // sort all pixels whiter than the threshold
         BrightnessSelector() {
             super(80, 120);
         }
@@ -83,28 +81,28 @@ public abstract class Selectors {
 
 
     static class WhiteSelector extends Selector {
-        // sort all pixels whiter than the threshold
+        // sort all pixels whiter than the threshold -12345678
         WhiteSelector() {
-            super(Integer.MIN_VALUE, -12345678);
+            super(0, 0x439EB2);
         }
 
         public boolean isValid(int pixel) {
             //println(pixel, this.value);
-            return pixel > this.end;
+            return (pixel & 0xFFFFFF) > this.end;
         }
 
     }
 
 
     static class BlackSelector extends Selector {
-        // sort all pixels whiter than the threshold
+        // sort all pixels whiter than the threshold -3456789
         BlackSelector() {
-            super(Integer.MIN_VALUE,-3456789);
+            super(0,0xCB40EB);
         }
 
         public boolean isValid(int pixel) {
             //println(pixel, this.value);
-            return pixel < this.end;
+            return (pixel & 0xFFFFFF) < this.end;
         }
 
         @Override

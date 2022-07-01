@@ -1,4 +1,4 @@
-public abstract class ThresholdSelector extends Selector{
+public abstract class ThresholdSelector extends DefaultSelector {
     //If i really dont have need for a range (f.E. the RandomSelector (hooh)
 
     ThresholdSelector(int end, int min, int max){

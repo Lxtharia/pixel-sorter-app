@@ -22,7 +22,7 @@ public class OptionPanel extends JFrame {
     private JButton saveButton;
     private JSlider slider;
     private JPanel mainPanel;
-    private JList<Selector> selectorList;
+    private JList<DefaultSelector> selectorList;
     private JButton saveAsButton;
     private JSpinner spinner1;
     private JSpinner spinner2;
@@ -139,7 +139,7 @@ public class OptionPanel extends JFrame {
                     slider.setEnabled(false);
                     spinner1.setEnabled(false);
                 }
-                if (pixelSorter.getSelector() instanceof Selectors.RandomSelector)
+                if (pixelSorter.getSelector() instanceof MySelectors.RandomSelector)
                     invertMaskCheckBox.setEnabled(false);
             }
         });

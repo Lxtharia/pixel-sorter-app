@@ -1,6 +1,5 @@
 
-
-public abstract class Selector {
+public abstract class DefaultSelector {
     static MyPixelSortApp sketch;
     //TODO: make these private and create a file for each Selector (cause idfk)
     //TODO: add getName() and getInvertedName()
@@ -11,7 +10,7 @@ public abstract class Selector {
     protected int max;
     protected boolean inverted;
 
-    public Selector(int start, int end, int min, int max) {
+    public DefaultSelector(int start, int end, int min, int max) {
         this.start = start;
         this.end = end;
         this.min = min;
@@ -19,7 +18,7 @@ public abstract class Selector {
         this.inverted = false;
     }
 
-    public Selector(int start, int end) {
+    public DefaultSelector(int start, int end) {
         this(start, end, 0, 255);
     }
 
@@ -28,12 +27,12 @@ public abstract class Selector {
     public abstract boolean isValid(int pixel);
 
 
-    public boolean isValidConsideringInverted(int pixel){
+    public boolean isValidConsideringInverted(int pixel) {
         return isValid(pixel) == !inverted;
     }
 
     public void shiftRange(int val) {
-        if(start+val < end) { //to prevent overflow :>
+        if (start + val < end + val) { //to prevent overflow :>
             setStart(start + val);
             setEnd(end + val);
         }

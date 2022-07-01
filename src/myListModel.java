@@ -1,21 +1,20 @@
 import javax.swing.*;
-import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 
-public class myListModel extends DefaultListModel<Selector> {
+public class myListModel extends DefaultListModel<DefaultSelector> {
 
-    ArrayList<Selector> selectorArray;
+    ArrayList<DefaultSelector> selectorArray;
 
     myListModel() {
         selectorArray = new ArrayList<>();
-        selectorArray.add(new Selectors.RandomSelector());
-        selectorArray.add(new Selectors.BrightnessSelector(50, 90));
-        selectorArray.add(new Selectors.HueSelector(125, 200));
-        selectorArray.add(new Selectors.BlackWhiteSelector());
+        selectorArray.add(new MySelectors.RandomSelector());
+        selectorArray.add(new MySelectors.BrightnessSelector(50, 90));
+        selectorArray.add(new MySelectors.HueSelector(125, 200));
+        selectorArray.add(new MySelectors.BlackWhiteSelector());
     }
 
     @Override
-    public Selector getElementAt(int index) {
+    public DefaultSelector getElementAt(int index) {
         return selectorArray.get(index);
     }
 

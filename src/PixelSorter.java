@@ -13,18 +13,18 @@ public class PixelSorter {
     //PImage originalImg; //should be dealt with from outside
     MyPixelSortApp sketch;
     private PImage img;
-    private Selector pixelSelector;
+    private DefaultSelector pixelSelector;
     private int row, column;
     //private Direction direction = Direction.Right;
     private xDirection xdir = xDirection.None;
     private yDirection ydir = yDirection.Down;
 
-    PixelSorter(MyPixelSortApp sketch, Selector pixelSelector) {
+    PixelSorter(MyPixelSortApp sketch, DefaultSelector pixelSelector) {
         this.sketch = sketch;
         this.pixelSelector = pixelSelector;
     }
 
-    PixelSorter(MyPixelSortApp sketch, Selector pixelSelector, PImage _img) {
+    PixelSorter(MyPixelSortApp sketch, DefaultSelector pixelSelector, PImage _img) {
         this(sketch, pixelSelector);
         setImg(_img);
     }
@@ -217,7 +217,7 @@ public class PixelSorter {
         this.img = _img.copy();
     }
 
-    public void setSelector(Selector pixelSelector) {
+    public void setSelector(DefaultSelector pixelSelector) {
         this.pixelSelector = pixelSelector;
         sketch.drawAgain();
     }
@@ -239,7 +239,7 @@ public class PixelSorter {
         return this.img.copy();
     }
 
-    public Selector getSelector() {
+    public DefaultSelector getSelector() {
         return this.pixelSelector;
     }
 

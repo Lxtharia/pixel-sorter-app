@@ -28,7 +28,7 @@ public class MyPixelSortApp extends PApplet {
     public void setup() {
 
         //give all the Selectors this sketch so they have use Processing functions etc (it needs to be an instance for colorMode etc)
-        Selector.sketch = this;
+        DefaultSelector.sketch = this;
 
         //Load and set originalSizedImg and set surface size
         loadAndSetImg("default.png");
@@ -37,7 +37,7 @@ public class MyPixelSortApp extends PApplet {
         surfaceSizeIsOneToOne = false;
 
         //sorter and OptionPanel
-        sorter = new PixelSorter(this, new Selectors.HueSelector(125, 200), originalImg);
+        sorter = new PixelSorter(this, new MySelectors.HueSelector(125, 200), originalImg);
         optionPanel = new OptionPanel(this, sorter);
 
         // allow resize and update surface to image dimensions

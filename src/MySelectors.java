@@ -1,12 +1,12 @@
 import processing.core.PApplet;
 
-public abstract class Selectors {
+public abstract class MySelectors {
     //=========SELECTORCLASSES==============
 
     public static PApplet sketch;
 
 
-    static class HueSelector extends Selector {
+    static class HueSelector extends DefaultSelector {
         // sort all pixels whiter than the threshold
         HueSelector(int s, int e) {
             super(s, e, 0, 360);
@@ -35,7 +35,7 @@ public abstract class Selectors {
     }
 
 
-    static class SaturationSelector extends Selector {
+    static class SaturationSelector extends DefaultSelector {
         SaturationSelector() {
             super(0, 127);
         }
@@ -47,7 +47,7 @@ public abstract class Selectors {
     }
 
 
-    static class BrightnessSelector extends Selector {
+    static class BrightnessSelector extends DefaultSelector {
         BrightnessSelector() {
             super(80, 120);
         }
@@ -62,7 +62,7 @@ public abstract class Selectors {
     }
 
 
-    static class BlackWhiteSelector extends Selector {
+    static class BlackWhiteSelector extends DefaultSelector {
         // sort all pixels whiter than the bottom range but blacker than the top range
         BlackWhiteSelector() {
             super(0x439EB2, 0xCB40EB, 0, 0xFFFFFF);
@@ -75,7 +75,7 @@ public abstract class Selectors {
 
         @Override
         public void shiftRange(int val) {
-            super.shiftRange(val*0x003000);
+            super.shiftRange(val*0x00F000);
         }
     }
 

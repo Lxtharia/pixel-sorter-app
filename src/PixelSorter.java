@@ -4,6 +4,7 @@ import processing.core.PImage;
 enum xDirection {
     Right, Left, None
 };
+
 enum yDirection {
     Down, Up, None
 };
@@ -29,23 +30,28 @@ public class PixelSorter {
     }
 
 
-    //==================== FUNCTIONS
+    //==================== FUNCTIONS =========
 
-    public PImage visualizeSelection() {
-        return visualizeSelection(this.img);
+    public PImage getMaskedImage() {
+        return getMaskedImage(this.img);
     }
 
-    public PImage visualizeSelection(PImage _img) {
+    public PImage getMaskedImage(PImage _img) {
         PImage img = _img.copy();
-        //visualizes which pixels would be sorted (by hue)
+        //visualizes which pixels would be sorted (by hue for example)
         img.loadPixels();
         for (int y = 0; y < img.height - 1; y++) {
             for (int x = 0; x < img.width - 1; x++) {
-                if (pixelSelector.isValid(img.pixels[x + y * img.width])) {
-                    //img.pixels[x + y * img.width] = color(255, 0, 0);
-                    //x = x;
-                } else
-                    img.pixels[x + y * img.width] = sketch.color(0);
+                if (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
+                    //IDK why but if this is commented out, it doesn't update correctly
+                    img.pixels[x + y * img.width] = 0xFFFFFF; //white
+                    //These also dont work well //TODO: fix this maybe
+//                    img.pixels[x + y * img.width] = img.pixels[x + y * img.width];
+//                    img.pixels[x + y * img.width] = PApplet.constrain(img.pixels[x + y * img.width] + 0x222222, 0, 0xFFFFFFFF); //whiter
+                } else {
+                    //TODO: Mask Color
+                    img.pixels[x + y * img.width] = 0x000000; //black
+                }
             }
         }
         img.updatePixels();
@@ -165,7 +171,7 @@ public class PixelSorter {
     //==================== Section FUNCTIONS
 
     private int getSectionStartX(int x, int y) {
-        while (false == pixelSelector.isValid(img.pixels[x + y * img.width])) {
+        while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
             x++;
             if (x >= img.width) return -1; //end of row
         }
@@ -174,7 +180,7 @@ public class PixelSorter {
 
     private int getSectionEndX(int x, int y) {
         x++;
-        while (pixelSelector.isValid(img.pixels[x + y * img.width])) {
+        while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
             x++;
             if (x >= img.width) return img.width - 1; //end of section
         }
@@ -183,7 +189,7 @@ public class PixelSorter {
 
     private int getSectionStartY(int x, int y) {
         if (y < img.height) {
-            while (false == pixelSelector.isValid(img.pixels[x + y * img.width])) {
+            while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
                 y++;
                 if (y >= img.height) return -1; //end of column
             }
@@ -196,7 +202,7 @@ public class PixelSorter {
         //int start = y; //add this to the while loop: && y<=start+70
         y++;
         if (y < img.height) {
-            while (pixelSelector.isValid(img.pixels[x + y * img.width])) {
+            while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
                 y++;
                 if (y >= img.height) return img.height - 1; //end of section
             }
@@ -226,6 +232,7 @@ public class PixelSorter {
         sketch.drawAgain();
     }
 
+
     //======GETTER=====
 
     public PImage getImg() {
@@ -243,4 +250,5 @@ public class PixelSorter {
     public yDirection getYDirection() {
         return this.ydir;
     }
+
 }

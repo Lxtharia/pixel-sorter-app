@@ -1,5 +1,6 @@
 import processing.core.*;
 import processing.event.*;
+
 import javax.swing.*;
 
 public class MyPixelSortApp extends PApplet {
@@ -21,6 +22,7 @@ public class MyPixelSortApp extends PApplet {
     private boolean surfaceSizeIsOneToOne;
     private boolean doDraw = true;
     private boolean defaultImgIsSet = true;
+    private boolean showMask = false;
     //int loops = 1;
 
     public void setup() {
@@ -43,6 +45,10 @@ public class MyPixelSortApp extends PApplet {
         surface.setLocation(500, 10);
         updateSurfaceSize();
 //        noLoop();
+        colorMode(HSB, 360);
+        //TODO:
+        // If this is minimized, minimize the other shit (idk how)
+        // If the optionPanel is minimized/maximized, min max this (which is on top anyway)
     }
 
     //=======CONFUSION=======
@@ -103,15 +109,19 @@ public class MyPixelSortApp extends PApplet {
     }
 
     public void draw() {
-        if (doDraw || mousePressed) {
+        if (doDraw) {
             doDraw = false;
-//            println("draw", frameRate, sorter.getSelector().getEnd());
-            if (mousePressed && !defaultImgIsSet) {
-                image(sorter.visualizeSelection(originalImg), 0, 0, width, height);
+            if (showMask) {
+
+                image(sorter.getMaskedImage(originalImg), 0, 0, width, height);
             } else {
                 img = sorter.sortImg(originalImg);
                 image(img, 0, 0, width, height);
             }
+        }
+        if (defaultImgIsSet && mousePressed) {
+            fill(0, 80);
+            rect(0, 0, width, height);
         }
     }
 
@@ -122,7 +132,7 @@ public class MyPixelSortApp extends PApplet {
     public void mouseWheel(MouseEvent e) {
         int val = -e.getCount();
         sorter.getSelector().shiftRange(val * 3);
-        println((sorter.getSelector()).getStart() + " : " + (sorter.getSelector()).getEnd());
+//        println((sorter.getSelector()).getStart() + " : " + (sorter.getSelector()).getEnd());
         optionPanel.updateValueUI();
         drawAgain();
     }
@@ -132,12 +142,24 @@ public class MyPixelSortApp extends PApplet {
         drawAgain();
     }
 
-    public void mouseClicked(){
-        if(defaultImgIsSet) {
-            //TODO: Open file dialoge :>
-            println("yes yes, we are selecting an img now lolll");
+    public void keyPressed() {
+        showMask = !showMask;
+    }
+
+    public void mousePressed() {
+        if (defaultImgIsSet) {
+            println("yes yes, we are selecting an img now lolll... ");
             optionPanel.chooseFile();
         }
+    }
+
+    public void setShowMask(boolean showMask) {
+        this.showMask = showMask;
+        drawAgain();
+    }
+
+    public boolean isShowMask() {
+        return showMask;
     }
 
     //==============MAIN AND SETTING===============

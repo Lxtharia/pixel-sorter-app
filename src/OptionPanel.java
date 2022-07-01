@@ -29,6 +29,8 @@ public class OptionPanel extends JFrame {
     private JSpinner windowHeightSpinner;
     private JCheckBox originalSizeCheckBox;
     private JSlider slider2;
+    private JCheckBox invertMaskCheckBox;
+    private JCheckBox showMaskCheckBox;
     PixelSorter pixelSorter;
     final private MyPixelSortApp sketchApplet;
     private boolean updateInProgress = false;
@@ -64,27 +66,7 @@ public class OptionPanel extends JFrame {
         });
         //================COOL YEAH====================
 
-        pathField.setEditable(false);
-
-
-        //TODO: Button Group that shows selected
-        ButtonUP.addActionListener(new DirectionListener(xDirection.None, yDirection.Up));
-        ButtonUpRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Up));
-        ButtonRIGHT.addActionListener(new DirectionListener(xDirection.Right, yDirection.None));
-        ButtonDownRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Down));
-        ButtonDOWN.addActionListener(new DirectionListener(xDirection.None, yDirection.Down));
-        ButtonDownLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Down));
-        ButtonLEFT.addActionListener(new DirectionListener(xDirection.Left, yDirection.None));
-        ButtonUpLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Up));
-
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sketchApplet.saveImg();
-            }
-        });
-
-        //Window Changer SpinnerField
+        //Surface Size Changer SpinnerField
         if (!sketchApplet.surfaceSizeIsOneToOne())
             windowHeightSpinner.setModel(new SpinnerNumberModel(sketchApplet.getSurfaceHeight(), 128, 3000, 50));
         windowHeightSpinner.addChangeListener(new ChangeListener() {
@@ -96,7 +78,6 @@ public class OptionPanel extends JFrame {
                     windowHeightSpinner.setValue(sketchApplet.getSurfaceHeight());
             }
         });
-//        windowHeightSpinner.firePropertyChange("value", 0, 800);
 
         //Windowsize checkbox
         originalSizeCheckBox.addActionListener(new ActionListener() {
@@ -111,7 +92,25 @@ public class OptionPanel extends JFrame {
                 }
             }
         });
-        //Save as button
+
+        //TODO: Button Group that shows selected
+        ButtonUP.addActionListener(new DirectionListener(xDirection.None, yDirection.Up));
+        ButtonUpRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Up));
+        ButtonRIGHT.addActionListener(new DirectionListener(xDirection.Right, yDirection.None));
+        ButtonDownRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Down));
+        ButtonDOWN.addActionListener(new DirectionListener(xDirection.None, yDirection.Down));
+        ButtonDownLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Down));
+        ButtonLEFT.addActionListener(new DirectionListener(xDirection.Left, yDirection.None));
+        ButtonUpLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Up));
+
+        //Save buttons
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sketchApplet.saveImg();
+            }
+        });
+
         saveAsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -119,8 +118,47 @@ public class OptionPanel extends JFrame {
             }
         });
 
-        //Set values on start
-        updateValueUI();
+
+        selectorList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                updateInProgress = true;
+                pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
+                invertMaskCheckBox.setSelected(pixelSorter.getSelector().isInverted());
+                slider.getModel().setMinimum(pixelSorter.getSelector().getMin());
+                slider.getModel().setMaximum(pixelSorter.getSelector().getMax());
+                slider2.setMinimum(pixelSorter.getSelector().getMin());
+                slider2.setMaximum(pixelSorter.getSelector().getMax());
+                updateInProgress = false;
+                updateSelectorValueStart(pixelSorter.getSelector().getStart());
+                updateSelectorValueEnd(pixelSorter.getSelector().getEnd());
+                slider.setEnabled(true);
+                spinner1.setEnabled(true);
+                invertMaskCheckBox.setEnabled(true);
+                if (pixelSorter.getSelector() instanceof ThresholdSelector) {
+                    slider.setEnabled(false);
+                    spinner1.setEnabled(false);
+                }
+                if (pixelSorter.getSelector() instanceof Selectors.RandomSelector)
+                    invertMaskCheckBox.setEnabled(false);
+            }
+        });
+
+
+        showMaskCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sketchApplet.setShowMask(showMaskCheckBox.isSelected());
+            }
+        });
+
+        invertMaskCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pixelSorter.getSelector().setInverted(invertMaskCheckBox.isSelected());
+                ((myListModel) selectorList.getModel()).fireContentsChanged(0, selectorList.getModel().getSize());
+            }
+        });
 
 
         slider.addChangeListener(new ChangeListener() {
@@ -139,9 +177,7 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {
                     updateInProgress = true;
-                    int newValue = slider2.getValue();
-                    //if it would go
-                    updateSelectorValueEnd(newValue);
+                    updateSelectorValueEnd(slider2.getValue());
                     updateInProgress = false;
                 }
             }
@@ -158,6 +194,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
+
         spinner2.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -169,7 +206,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
-
+        pathField.setEditable(false);
         selectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,10 +214,14 @@ public class OptionPanel extends JFrame {
             }
         });
 
+        //Set values on start
+        selectorList.setSelectedIndex(2); //Set Default Selector (Hue)
+        updateValueUI();
 
         //END OF YEAH
         pack();
         setVisible(true);
+
     }
 
 
@@ -192,16 +233,17 @@ public class OptionPanel extends JFrame {
             newValue--; // uncommenting this and removing the +1 above makes it so
 /*          the value that would be pushed to be dominant (spinners cant push, sliders can't push the other below 0)
             If they CAN push, it stackoverflows because the spinner can overflow the integers */
-
         }
         pixelSorter.getSelector().setStart(newValue);
         //If something changed
         spinner2.setValue(pixelSorter.getSelector().getEnd());
+        slider2.setValue(pixelSorter.getSelector().getEnd());
         //update these two (one of these called this function :>)
         slider.setValue(newValue);
         spinner1.setValue(newValue);
     }
 
+    //TODO: slider model!!
     //sets slider2 and spinner2
     private void updateSelectorValueEnd(int newValue) {
         //check if this slider2 or spinner2 would go below the other sliders value
@@ -213,6 +255,7 @@ public class OptionPanel extends JFrame {
         pixelSorter.getSelector().setEnd(newValue);
         //If something changed
         spinner1.setValue(pixelSorter.getSelector().getStart());
+        slider.setValue(pixelSorter.getSelector().getStart());
         //update these two (one of these called this function :>)
         slider2.setValue(newValue);
         spinner2.setValue(newValue);
@@ -227,31 +270,18 @@ public class OptionPanel extends JFrame {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-
         selectorList = new JList<>(new myListModel());
         selectorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         selectorList.setCellRenderer(new myListCellRenderer());
-//        selectorList = new JList<String>(new String[]{"Hallo", "Tschüss", "Maybe"});
-        selectorList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
-                updateSelectorValueStart(pixelSorter.getSelector().getStart());
-                updateSelectorValueEnd(pixelSorter.getSelector().getEnd());
-                //TODO: change slider max and min
-            }
-        });
     }
 
     void chooseFile() {
         JFileChooser fc = new JFileChooser();
         fc.removeChoosableFileFilter(fc.getChoosableFileFilters()[0]);
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Processing compatible image formats", "png", "jpg"));
-        fc.setCurrentDirectory(new File("."));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Images", "png", "jpg", "tga", "gif"));
+        fc.setCurrentDirectory(new File("./data"));
         fc.setFileHidingEnabled(true);
-
         int returnVal = fc.showOpenDialog(OptionPanel.this);
-        fc.setVisible(true);
 
         try {
             if (returnVal == JFileChooser.APPROVE_OPTION) {

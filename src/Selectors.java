@@ -5,46 +5,28 @@ public abstract class Selectors {
 
     public static PApplet sketch;
 
+
     static class HueSelector extends Selector {
         // sort all pixels whiter than the threshold
-        HueSelector() {
-            super(80, 130);
-        }
-
         HueSelector(int s, int e) {
-            super(s, e);
+            super(s, e, 0, 360);
+        }
+
+        HueSelector() {
+            this(80, 130);
         }
 
         public boolean isValid(int pixel) {
-            if( start%255 < end%255 )
-                return (sketch.hue(pixel) >= start % 255 && sketch.hue(pixel) <= end % 255);
+            if( start%360 < end%360 )
+                return (sketch.hue(pixel) >= start % 360 && sketch.hue(pixel) <= end % 360);
             else
-                return (sketch.hue(pixel) >= start % 255 || sketch.hue(pixel) <= end % 255);
+                return (sketch.hue(pixel) >= start % 360 || sketch.hue(pixel) <= end % 360);
         }
     }
 
-    static class InvertHueSelector extends Selector {
-        // sort all pixels whiter than the threshold
-        InvertHueSelector() {
-            super(80, 130);
-        }
-
-        InvertHueSelector(int s, int e) {
-            super(s, e);
-        }
-
-        public boolean isValid(int pixel) {
-            if( start%255 < end%255 )
-                return (sketch.hue(pixel) <= start % 255 || sketch.hue(pixel) >= end % 255);
-            else
-                return (sketch.hue(pixel) >= start % 255 && sketch.hue(pixel) <= end % 255);
-        }
-    }
-
-
-    static class RandomSelector extends Selector {
+    static class RandomSelector extends ThresholdSelector {
         RandomSelector() {
-            super(0, 100);
+            super(100, 0, 500);
         }
 
         public boolean isValid(int pixel) {
@@ -80,59 +62,22 @@ public abstract class Selectors {
     }
 
 
-    static class WhiteSelector extends Selector {
-        // sort all pixels whiter than the threshold -12345678
-        WhiteSelector() {
-            super(0, 0x439EB2);
+    static class BlackWhiteSelector extends Selector {
+        // sort all pixels whiter than the bottom range but blacker than the top range
+        BlackWhiteSelector() {
+            super(0x439EB2, 0xCB40EB, 0, 0xFFFFFF);
         }
 
         public boolean isValid(int pixel) {
-            //println(pixel, this.value);
-            return (pixel & 0xFFFFFF) > this.end;
-        }
-
-    }
-
-
-    static class BlackSelector extends Selector {
-        // sort all pixels whiter than the threshold -3456789
-        BlackSelector() {
-            super(0,0xCB40EB);
-        }
-
-        public boolean isValid(int pixel) {
-            //println(pixel, this.value);
-            return (pixel & 0xFFFFFF) < this.end;
+            int p = pixel & 0XFFFFFF; //ignore alpha 0xFF______
+            return (p>=start && p<end);
         }
 
         @Override
         public void shiftRange(int val) {
-            super.shiftRange(val*30000);
+            super.shiftRange(val*0x003000);
         }
     }
 
 
-    static class BrightSelector extends Selector {
-        // sort all pixels whiter than the threshold
-        BrightSelector() {
-            super(0, 127);
-        }
-
-        public boolean isValid(int pixel) {
-            //println(pixel, this.value);
-            return sketch.brightness(pixel) > this.end;
-        }
-    }
-
-    static class DarkSelector extends Selector {
-        // sort all pixels whiter than the threshold
-        DarkSelector() {
-            super(0, 223);
-        }
-
-        public boolean isValid(int pixel) {
-            //println(pixel, this.value);
-            return sketch.brightness(pixel) < this.end;
-        }
-    }
 }

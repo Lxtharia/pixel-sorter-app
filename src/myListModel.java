@@ -11,9 +11,7 @@ public class myListModel extends DefaultListModel<Selector> {
         selectorArray.add(new Selectors.RandomSelector());
         selectorArray.add(new Selectors.BrightnessSelector(50, 90));
         selectorArray.add(new Selectors.HueSelector(125, 200));
-        selectorArray.add(new Selectors.InvertHueSelector(50, 90));
-        selectorArray.add(new Selectors.WhiteSelector());
-        selectorArray.add(new Selectors.BlackSelector());
+        selectorArray.add(new Selectors.BlackWhiteSelector());
     }
 
     @Override
@@ -26,5 +24,7 @@ public class myListModel extends DefaultListModel<Selector> {
         return selectorArray.size();
     }
 
-
+    protected void fireContentsChanged(int index0, int index1) {
+        super.fireContentsChanged(this, index0, index1);
+    }
 }

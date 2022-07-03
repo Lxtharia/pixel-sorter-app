@@ -23,6 +23,7 @@ public class OptionPanel extends JFrame {
     private JButton ButtonUpRight;
     private JButton ButtonDOWN;
     private JButton ButtonDownRight;
+    private MyButtonGroup myButtonGroup;
     private JButton saveButton;
     private JSlider slider;
     private JPanel mainPanel;
@@ -77,7 +78,6 @@ public class OptionPanel extends JFrame {
         windowHeightSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                System.out.println("windowchangespinner changed lmao");
                 int val = (int) windowHeightSpinner.getValue();
                 if (!sketchApplet.resizeSurfaceToHeight(val))
                     windowHeightSpinner.setValue(sketchApplet.getSurfaceHeight());
@@ -98,15 +98,15 @@ public class OptionPanel extends JFrame {
             }
         });
 
-        //TODO: Button Group that shows selected
-        ButtonUP.addActionListener(new DirectionListener(xDirection.None, yDirection.Up));
-        ButtonUpRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Up));
-        ButtonRIGHT.addActionListener(new DirectionListener(xDirection.Right, yDirection.None));
-        ButtonDownRight.addActionListener(new DirectionListener(xDirection.Right, yDirection.Down));
-        ButtonDOWN.addActionListener(new DirectionListener(xDirection.None, yDirection.Down));
-        ButtonDownLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Down));
-        ButtonLEFT.addActionListener(new DirectionListener(xDirection.Left, yDirection.None));
-        ButtonUpLeft.addActionListener(new DirectionListener(xDirection.Left, yDirection.Up));
+        ButtonUP.addActionListener(new DirectionButtonListener(ButtonUP, xDirection.None, yDirection.Up));
+        ButtonUpRight.addActionListener(new DirectionButtonListener(ButtonUpRight, xDirection.Right, yDirection.Up));
+        ButtonRIGHT.addActionListener(new DirectionButtonListener(ButtonRIGHT, xDirection.Right, yDirection.None));
+        ButtonDownRight.addActionListener(new DirectionButtonListener(ButtonDownRight, xDirection.Right, yDirection.Down));
+        ButtonDOWN.addActionListener(new DirectionButtonListener(ButtonDOWN, xDirection.None, yDirection.Down));
+        ButtonDownLeft.addActionListener(new DirectionButtonListener(ButtonDownLeft, xDirection.Left, yDirection.Down));
+        ButtonLEFT.addActionListener(new DirectionButtonListener(ButtonLEFT, xDirection.Left, yDirection.None));
+        ButtonUpLeft.addActionListener(new DirectionButtonListener(ButtonUpLeft, xDirection.Left, yDirection.Up));
+        myButtonGroup = new MyButtonGroup(ButtonUP, ButtonUpRight, ButtonRIGHT, ButtonDownRight, ButtonDOWN, ButtonDownLeft, ButtonLEFT, ButtonUpLeft);
 
         //Save buttons
         saveButton.addActionListener(new ActionListener() {
@@ -220,6 +220,7 @@ public class OptionPanel extends JFrame {
         });
 
         //Set values on start
+        ButtonDOWN.doClick(); //set Direction to DOWN
         selectorList.setSelectedIndex(2); //Set Default Selector (Hue)
         updateValueUI();
 
@@ -302,17 +303,20 @@ public class OptionPanel extends JFrame {
     }
 
 
-    class DirectionListener implements ActionListener {
+    class DirectionButtonListener implements ActionListener {
         xDirection row;
         yDirection column;
+        JButton button;
 
-        DirectionListener(xDirection row, yDirection column) {
+        DirectionButtonListener(JButton b, xDirection row, yDirection column) {
+            this.button = b;
             this.row = row;
             this.column = column;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            myButtonGroup.setSelected(button);
             pixelSorter.setXDirection(row);
             pixelSorter.setYDirection(column);
         }

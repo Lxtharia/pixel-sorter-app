@@ -13,6 +13,15 @@ public abstract class ThresholdSelector extends DefaultSelector {
         this(end, -1, 255);
     }
 
+
+    @Override
+    public void shiftRange(int val) {
+        if(end+val >= 0)
+        super.shiftRange(val);
+        else
+            setEnd(1);
+    }
+
     @Override
     public void setStart(int start) {
         super.setStart(0);

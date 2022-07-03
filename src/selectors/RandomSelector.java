@@ -4,10 +4,10 @@ import pixelsorter.ThresholdSelector;
 
 public class RandomSelector extends ThresholdSelector {
     public RandomSelector() {
-        super(100, 0, 500);
+        super(20, 0, 100);
     }
 
     public boolean isValid(int pixel) {
-        return 5 < sketch.random(end);
+        return 1 < sketch.random(end);
     }
 }

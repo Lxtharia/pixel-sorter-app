@@ -45,7 +45,7 @@ public class MyPixelSortApp extends PApplet {
         surface.setLocation(500, 10);
         updateSurfaceSize();
 //        noLoop();
-        colorMode(HSB, 360);
+        colorMode(HSB, 360, 100, 100);
         //TODO:
         // If this is minimized, minimize the other shit (idk how)
         // If the optionPanel is minimized/maximized, min max this (which is on top anyway)
@@ -125,8 +125,8 @@ public class MyPixelSortApp extends PApplet {
         }
     }
 
-    public void saveImg() {
-        img.save("export" + "_" + sorter.getXDirection() + sorter.getYDirection() + "_" + sorter.hashCode() + hour() + minute() + second() + ".png");
+    public boolean saveImg() {
+        return img.save("export" + "_" + sorter.getXDirection() + sorter.getYDirection() + "_" + sorter.hashCode() + hour() + minute() + second() + ".png");
     }
 
     public void mouseWheel(MouseEvent e) {

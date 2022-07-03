@@ -19,7 +19,7 @@ public abstract class DefaultSelector {
     }
 
     public DefaultSelector(int start, int end) {
-        this(start, end, 0, 255);
+        this(start, end, 0, 100);
     }
 
     //=========================

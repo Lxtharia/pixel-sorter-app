@@ -1,5 +1,8 @@
+package pixelsorter;
+
 import processing.core.PApplet;
 import processing.core.PImage;
+import selectors.DefaultSelector;
 
 enum xDirection {
     Right, Left, None
@@ -10,12 +13,10 @@ enum yDirection {
 };
 
 public class PixelSorter {
-    //PImage originalImg; //should be dealt with from outside
     MyPixelSortApp sketch;
     private PImage img;
     private DefaultSelector pixelSelector;
     private int row, column;
-    //private Direction direction = Direction.Right;
     private xDirection xdir = xDirection.None;
     private yDirection ydir = yDirection.Down;
 
@@ -43,14 +44,12 @@ public class PixelSorter {
         for (int y = 0; y < img.height - 1; y++) {
             for (int x = 0; x < img.width - 1; x++) {
                 if (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
-                    //IDK why but if this is commented out, it doesn't update correctly
-                    img.pixels[x + y * img.width] = 0xFFFFFF; //white
-                    //These also dont work well //TODO: fix this maybe
-//                    img.pixels[x + y * img.width] = img.pixels[x + y * img.width];
-//                    img.pixels[x + y * img.width] = PApplet.constrain(img.pixels[x + y * img.width] + 0x222222, 0, 0xFFFFFFFF); //whiter
+                    //COLORS NEED TO BE 0xFF______ OR sketch.color(...)!!! OR ELSE IT WORKS UNRELIABLY
+                    img.pixels[x + y * img.width] = sketch.color(360); //= 0xFFFFFFFF; //white //gets sorted
+//                    img.pixels[x + y * img.width] = PApplet.constrain(img.pixels[x + y * img.width] + 0x00222222, 0xFF000000, 0xFFFFFFFF); //whiter
                 } else {
                     //TODO: Mask Color
-                    img.pixels[x + y * img.width] = 0x000000; //black
+                    img.pixels[x + y * img.width] = sketch.color(0); // = 0xFF000000; //black //
                 }
             }
         }
@@ -171,7 +170,7 @@ public class PixelSorter {
     //==================== Section FUNCTIONS
 
     private int getSectionStartX(int x, int y) {
-        while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
+        while (!pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
             x++;
             if (x >= img.width) return -1; //end of row
         }
@@ -189,7 +188,7 @@ public class PixelSorter {
 
     private int getSectionStartY(int x, int y) {
         if (y < img.height) {
-            while (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
+            while (!pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
                 y++;
                 if (y >= img.height) return -1; //end of column
             }

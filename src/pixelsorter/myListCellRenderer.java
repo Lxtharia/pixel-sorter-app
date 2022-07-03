@@ -1,3 +1,7 @@
+package pixelsorter;
+
+import selectors.DefaultSelector;
+
 import javax.swing.*;
 import java.awt.*;
 

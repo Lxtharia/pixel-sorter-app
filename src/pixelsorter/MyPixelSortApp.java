@@ -1,5 +1,8 @@
+package pixelsorter;
+
 import processing.core.*;
 import processing.event.*;
+import selectors.DefaultSelector;
 
 import javax.swing.*;
 
@@ -37,7 +40,7 @@ public class MyPixelSortApp extends PApplet {
         surfaceSizeIsOneToOne = false;
 
         //sorter and OptionPanel
-        sorter = new PixelSorter(this, new MySelectors.HueSelector(125, 200), originalImg);
+        sorter = new PixelSorter(this, new selectors.HueSelector(125, 200), originalImg);
         optionPanel = new OptionPanel(this, sorter);
 
         // allow resize and update surface to image dimensions
@@ -112,7 +115,6 @@ public class MyPixelSortApp extends PApplet {
         if (doDraw) {
             doDraw = false;
             if (showMask) {
-
                 image(sorter.getMaskedImage(originalImg), 0, 0, width, height);
             } else {
                 img = sorter.sortImg(originalImg);
@@ -176,7 +178,7 @@ public class MyPixelSortApp extends PApplet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String[] appletArgs = new String[]{"MyPixelSortApp"};
+        String[] appletArgs = new String[]{"pixelsorter.MyPixelSortApp"};
         if (passedArgs != null) {
             PApplet.main(concat(appletArgs, passedArgs));
         } else {

@@ -1,6 +1,9 @@
+package selectors;
+
+import pixelsorter.MyPixelSortApp;
 
 public abstract class DefaultSelector {
-    static MyPixelSortApp sketch;
+    public static MyPixelSortApp sketch; //Just so we can use non-static Processing functions everywhere f.e. hue() cause that depends on colorMode()
     //TODO: make these private and create a file for each Selector (cause idfk)
     //TODO: add getName() and getInvertedName()
     protected int start;

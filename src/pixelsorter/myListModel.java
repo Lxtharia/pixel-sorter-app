@@ -1,5 +1,8 @@
+package pixelsorter;
+
 import javax.swing.*;
 import java.util.ArrayList;
+import selectors.*;
 
 public class myListModel extends DefaultListModel<DefaultSelector> {
 
@@ -7,10 +10,10 @@ public class myListModel extends DefaultListModel<DefaultSelector> {
 
     myListModel() {
         selectorArray = new ArrayList<>();
-        selectorArray.add(new MySelectors.RandomSelector());
-        selectorArray.add(new MySelectors.BrightnessSelector(50, 90));
-        selectorArray.add(new MySelectors.HueSelector(125, 200));
-        selectorArray.add(new MySelectors.BlackWhiteSelector());
+        selectorArray.add(new selectors.RandomSelector());
+        selectorArray.add(new selectors.BrightnessSelector(50, 90));
+        selectorArray.add(new selectors.HueSelector(125, 200));
+        selectorArray.add(new selectors.BlackWhiteSelector());
     }
 
     @Override

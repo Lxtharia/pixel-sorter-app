@@ -1,3 +1,7 @@
+package pixelsorter;
+
+import selectors.DefaultSelector;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -46,6 +50,7 @@ public class OptionPanel extends JFrame {
         setLocation(0, 10);
         setResizable(false);
 
+//                sketchApplet.frame.addWindowListener();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -79,7 +84,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
-        //Windowsize checkbox
+        //WindowSize checkbox
         originalSizeCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -139,12 +144,12 @@ public class OptionPanel extends JFrame {
                     slider.setEnabled(false);
                     spinner1.setEnabled(false);
                 }
-                if (pixelSorter.getSelector() instanceof MySelectors.RandomSelector)
+                if (pixelSorter.getSelector() instanceof selectors.RandomSelector)
                     invertMaskCheckBox.setEnabled(false);
             }
         });
 
-
+        //TODO: new PFrame that shows only the mask
         showMaskCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -269,7 +274,6 @@ public class OptionPanel extends JFrame {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         selectorList = new JList<>(new myListModel());
         selectorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         selectorList.setCellRenderer(new myListCellRenderer());

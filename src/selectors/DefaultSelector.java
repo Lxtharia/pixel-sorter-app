@@ -25,6 +25,10 @@ public abstract class DefaultSelector {
         this(start, end, 0, 100);
     }
 
+    public DefaultSelector(){
+        this(0,50);
+    }
+
     //=========================
 
     public abstract boolean isValid(int pixel);

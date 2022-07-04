@@ -221,7 +221,8 @@ public class OptionPanel extends JFrame {
 
         //Set values on start
         ButtonDOWN.doClick(); //set Direction to DOWN
-        selectorList.setSelectedIndex(2); //Set Default Selector (Hue)
+        selectorList.setSelectedIndex(1); //Set Default Selector (Hue)
+        originalSizeCheckBox.doClick();
         updateValueUI();
 
         //END OF YEAH

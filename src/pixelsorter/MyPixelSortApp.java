@@ -36,7 +36,7 @@ public class MyPixelSortApp extends PApplet {
         //Load and set originalSizedImg and set surface size
         loadAndSetImg("default.png");
         defaultImgIsSet = true;
-        shouldSurfaceHeight = 600;
+        shouldSurfaceHeight = 800;
         surfaceSizeIsOneToOne = false;
 
         //sorter and OptionPanel

@@ -43,6 +43,7 @@ public class PixelSorter {
     private int row, column;
     private xDirection xdir = xDirection.None;
     private yDirection ydir = yDirection.Down;
+    private boolean showWhiteMask = true;
 
     PixelSorter(MyPixelSortApp sketch, DefaultSelector pixelSelector) {
         this.sketch = sketch;
@@ -69,7 +70,9 @@ public class PixelSorter {
             for (int x = 0; x < img.width - 1; x++) {
                 if (pixelSelector.isValidConsideringInverted(img.pixels[x + y * img.width])) {
                     //COLORS NEED TO BE 0xFF______ OR sketch.color(...)!!! OR ELSE IT WORKS UNRELIABLY
-                    img.pixels[x + y * img.width] = sketch.color(360); //= 0xFFFFFFFF; //white //gets sorted
+
+                    if (showWhiteMask)
+                        img.pixels[x + y * img.width] = sketch.color(360); //= 0xFFFFFFFF; //white //gets sorted
 //                    img.pixels[x + y * img.width] = PApplet.constrain(img.pixels[x + y * img.width] + 0x00222222, 0xFF000000, 0xFFFFFFFF); //whiter
                 } else {
                     //TODO: Mask Color
@@ -274,4 +277,12 @@ public class PixelSorter {
         return this.ydir;
     }
 
+    public boolean isShowWhiteMask() {
+        return showWhiteMask;
+    }
+
+    public void setShowWhiteMask(boolean showWhiteMask) {
+        this.showWhiteMask = showWhiteMask;
+        sketch.drawAgain();
+    }
 }

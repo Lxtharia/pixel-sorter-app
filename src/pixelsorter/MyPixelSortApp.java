@@ -26,6 +26,7 @@ public class MyPixelSortApp extends PApplet {
     private boolean doDraw = true;
     private boolean defaultImgIsSet = true;
     private boolean showMask = false;
+    private boolean drawBackground = false;
     //int loops = 1;
 
     public void setup() {
@@ -56,11 +57,17 @@ public class MyPixelSortApp extends PApplet {
 
     //=======CONFUSION=======
 
-    public void loadAndSetImg(String filepath) {
-        originalSizedImg = loadImage(filepath);
-        originalImg = originalSizedImg.copy();
-        updateSurfaceSize();
-        defaultImgIsSet = false;
+    public boolean loadAndSetImg(String filepath) {
+        //TODO: store filename in a variable to use in exported filename
+        //because the shitty FileDialog can't hide these and using JFileChooser is even worse
+        if (filepath.endsWith(".png") || filepath.endsWith(".jpg") || filepath.endsWith(".tga") || filepath.endsWith(".gif") || filepath.endsWith(".jpeg")) {
+            originalSizedImg = loadImage(filepath);
+            if (originalSizedImg == null) return false;
+            originalImg = originalSizedImg.copy();
+            updateSurfaceSize();
+            defaultImgIsSet = false;
+            return true;
+        } else return false;
     }
 
     //cause this takes current surfaceHeight and calculates depending on setImg ratio (yea)
@@ -117,13 +124,10 @@ public class MyPixelSortApp extends PApplet {
             if (showMask) {
                 image(sorter.getMaskedImage(originalImg), 0, 0, width, height);
             } else {
+                if (drawBackground) background(0);
                 img = sorter.sortImg(originalImg);
                 image(img, 0, 0, width, height);
             }
-        }
-        if (defaultImgIsSet && mousePressed) {
-            fill(0, 80);
-            rect(0, 0, width, height);
         }
     }
 
@@ -152,6 +156,7 @@ public class MyPixelSortApp extends PApplet {
         if (defaultImgIsSet) {
             println("yes yes, we are selecting an img now lolll... ");
             optionPanel.chooseFile();
+            mousePressed = false;
         }
     }
 
@@ -184,5 +189,14 @@ public class MyPixelSortApp extends PApplet {
         } else {
             PApplet.main(appletArgs);
         }
+    }
+
+    public void drawBackgroundForTransparentImages(boolean selected) {
+        drawBackground = selected;
+        drawAgain();
+    }
+
+    public boolean isDrawingBackground() {
+        return drawBackground;
     }
 }

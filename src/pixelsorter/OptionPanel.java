@@ -7,10 +7,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
 public class OptionPanel extends JFrame {
     private JButton selectButton;
@@ -36,6 +34,8 @@ public class OptionPanel extends JFrame {
     private JSlider slider2;
     private JCheckBox invertMaskCheckBox;
     private JCheckBox showMaskCheckBox;
+    private JCheckBox checkBoxDrawBackground;
+    private JCheckBox checkBoxWhiteMask;
     PixelSorter pixelSorter;
     final private MyPixelSortApp sketchApplet;
     private boolean updateInProgress = false;
@@ -127,6 +127,7 @@ public class OptionPanel extends JFrame {
         selectorList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                //TODO: this fires twice when clicked (randomSelector draws twice which looks unclean :(
                 updateInProgress = true;
                 pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
                 invertMaskCheckBox.setSelected(pixelSorter.getSelector().isInverted());
@@ -154,6 +155,7 @@ public class OptionPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sketchApplet.setShowMask(showMaskCheckBox.isSelected());
+                checkBoxWhiteMask.setEnabled(showMaskCheckBox.isSelected());
             }
         });
 
@@ -162,6 +164,20 @@ public class OptionPanel extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 pixelSorter.getSelector().setInverted(invertMaskCheckBox.isSelected());
                 ((myListModel) selectorList.getModel()).fireContentsChanged(0, selectorList.getModel().getSize());
+            }
+        });
+
+        checkBoxWhiteMask.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pixelSorter.setShowWhiteMask(checkBoxWhiteMask.isSelected());
+            }
+        });
+
+        checkBoxDrawBackground.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sketchApplet.drawBackgroundForTransparentImages(checkBoxDrawBackground.isSelected());
             }
         });
 
@@ -220,9 +236,17 @@ public class OptionPanel extends JFrame {
         });
 
         //Set values on start
+        windowHeightSpinner.setValue(600);
         ButtonDOWN.doClick(); //set Direction to DOWN
         selectorList.setSelectedIndex(1); //Set Default Selector (Hue)
-        originalSizeCheckBox.doClick();
+//        originalSizeCheckBox.doClick(); //Sets Default ImageSize to OriginalSize
+        checkBoxWhiteMask.setSelected(false);
+        checkBoxWhiteMask.doClick();
+        showMaskCheckBox.setSelected(true);
+        showMaskCheckBox.doClick();
+        checkBoxDrawBackground.setSelected(false);
+        checkBoxDrawBackground.doClick(); //To trigger the action listener
+
         updateValueUI();
 
         //END OF YEAH
@@ -282,27 +306,23 @@ public class OptionPanel extends JFrame {
     }
 
     void chooseFile() {
-        JFileChooser fc = new JFileChooser();
-        fc.removeChoosableFileFilter(fc.getChoosableFileFilters()[0]);
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Images", "png", "jpg", "tga", "gif"));
-        fc.setCurrentDirectory(new File("./data"));
-        fc.setFileHidingEnabled(true);
-        int returnVal = fc.showOpenDialog(OptionPanel.this);
+        FileDialog fd = new FileDialog(this, "Choose file");
+        fd.setVisible(true);
 
         try {
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File f = fc.getSelectedFile();
-                String path = f.getPath();
+            if (fd.getFile() != null) {
+                String filename = fd.getFile();
+                String path = fd.getDirectory() + filename;
                 System.out.println(path);
-                sketchApplet.loadAndSetImg(path);
                 pathField.setText(path);
                 pathField.setSelectionEnd(path.length() - 1);
+                if(!sketchApplet.loadAndSetImg(path))
+                    chooseFile();
             }
         } catch (Exception ex) {
             System.out.println("Error :(\n" + ex);
         }
     }
-
 
     class DirectionButtonListener implements ActionListener {
         xDirection row;

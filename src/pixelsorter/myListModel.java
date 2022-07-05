@@ -12,8 +12,9 @@ public class myListModel extends DefaultListModel<DefaultSelector> {
         selectorArray = new ArrayList<>();
         selectorArray.add(new selectors.RandomSelector());
         selectorArray.add(new selectors.HueSelector(130, 270));
-        selectorArray.add(new selectors.BrightnessSelector(45, 90));
+        selectorArray.add(new selectors.BrightnessSelector());
         selectorArray.add(new selectors.BlackWhiteSelector());
+        selectorArray.add(new selectors.SaturationSelector());
 //        selectorArray.add(new RedSelector());
 //        selectorArray.add(new BlueSelector());
 //        selectorArray.add(new GreenSelector());

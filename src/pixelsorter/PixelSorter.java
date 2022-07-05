@@ -5,11 +5,35 @@ import processing.core.PImage;
 import selectors.DefaultSelector;
 
 enum xDirection {
-    Right, Left, None
+    Right, Left, None;
+
+    public String toString() {
+        switch (this) {
+            case Left:
+                return "L";
+            case Right:
+                return "R";
+            case None:
+                return "";
+        }
+        return null;
+    }
 };
 
 enum yDirection {
-    Down, Up, None
+    Down, Up, None;
+
+    public String toString() {
+        switch (this) {
+            case Down:
+                return "D";
+            case Up:
+                return "U";
+            case None:
+                return "";
+        }
+        return null;
+    }
 };
 
 public class PixelSorter {

@@ -17,7 +17,6 @@ public class MyPixelSortApp extends PApplet {
 
     // image path is relative to sketch directory
     private PImage originalImg;
-    private PImage originalSizedImg;
     private PImage img;
     PixelSorter sorter;
     OptionPanel optionPanel;
@@ -45,6 +44,8 @@ public class MyPixelSortApp extends PApplet {
         optionPanel = new OptionPanel(this, sorter);
 
         // allow resize and update surface to image dimensions
+        //frame.setIconImage(new ImageIcon("icon.png").getImage());
+        surface.setIcon(loadImage("icon.png"));
         surface.setResizable(false);
         surface.setLocation(500, 10);
         updateSurfaceSize();
@@ -61,7 +62,7 @@ public class MyPixelSortApp extends PApplet {
         //TODO: store filename in a variable to use in exported filename
         //because the shitty FileDialog can't hide these and using JFileChooser is even worse
         if (filepath.endsWith(".png") || filepath.endsWith(".jpg") || filepath.endsWith(".tga") || filepath.endsWith(".gif") || filepath.endsWith(".jpeg")) {
-            originalSizedImg = loadImage(filepath);
+            PImage originalSizedImg = loadImage(filepath);
             if (originalSizedImg == null) return false;
             originalImg = originalSizedImg.copy();
             updateSurfaceSize();

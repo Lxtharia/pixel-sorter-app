@@ -50,8 +50,10 @@ public class OptionPanel extends JFrame {
         setContentPane(mainPanel);
         setLocation(0, 10);
         setResizable(false);
+        ImageIcon icon = new ImageIcon("resources/icon.png");
+        setIconImage(icon.getImage());
 
-//                sketchApplet.frame.addWindowListener();
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -127,7 +129,9 @@ public class OptionPanel extends JFrame {
         selectorList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                //TODO: this fires twice when clicked (randomSelector draws twice which looks unclean :(
+                //because this fires twice when clicked (randomSelector draws twice which looks unclean :(
+                if(e.getValueIsAdjusting())
+                    return;
                 updateInProgress = true;
                 pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
                 invertMaskCheckBox.setSelected(pixelSorter.getSelector().isInverted());

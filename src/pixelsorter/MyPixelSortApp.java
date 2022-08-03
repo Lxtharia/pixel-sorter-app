@@ -133,7 +133,7 @@ public class MyPixelSortApp extends PApplet {
     }
 
     public boolean saveImg() {
-        return img.save("export" + "_" + sorter.getXDirection().toString() + sorter.getYDirection().toString() + "_" + sorter.hashCode() + hour() + minute() + second() + ".png");
+        return img.save("export" + "_" + hour() + minute() + second() + "_" +  sorter.getXDirection().toString() + sorter.getYDirection().toString() + "_"  + img.hashCode() + ".png");
     }
 
     public void mouseWheel(MouseEvent e) {

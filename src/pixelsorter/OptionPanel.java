@@ -36,6 +36,9 @@ public class OptionPanel extends JFrame {
     private JCheckBox showMaskCheckBox;
     private JCheckBox checkBoxDrawBackground;
     private JCheckBox checkBoxWhiteMask;
+    private JButton setLastSavedImage;
+    private JButton freezeButton;
+    private JButton unfreezeButton;
     PixelSorter pixelSorter;
     final private MyPixelSortApp sketchApplet;
     private boolean updateInProgress = false;
@@ -61,6 +64,8 @@ public class OptionPanel extends JFrame {
                 dispose();
             }
         });
+
+        //TODO: either delete or implement that both can be minimized together, or that the optionpane is a dialog
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowIconified(WindowEvent e) {
@@ -100,6 +105,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
+        //Buttons
         ButtonUP.addActionListener(new DirectionButtonListener(ButtonUP, xDirection.None, yDirection.Up));
         ButtonUpRight.addActionListener(new DirectionButtonListener(ButtonUpRight, xDirection.Right, yDirection.Up));
         ButtonRIGHT.addActionListener(new DirectionButtonListener(ButtonRIGHT, xDirection.Right, yDirection.None));
@@ -115,6 +121,7 @@ public class OptionPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sketchApplet.saveImg();
+                setLastSavedImage.setEnabled(true);
             }
         });
 
@@ -122,15 +129,46 @@ public class OptionPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO: Save as
+                setLastSavedImage.setEnabled(true);
             }
         });
 
+        setLastSavedImage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String lastSavedImagePath = sketchApplet.getLastSavedImagePath();
+                sketchApplet.loadAndSetImg(lastSavedImagePath);
+                //Ui stuff //TODO: implement a fireImageChangedEvent() function
+                unfreezeButton.setEnabled(false);
+                pathField.setText(lastSavedImagePath);
+                pathField.setSelectionEnd(lastSavedImagePath.length() - 1);
+                if (pathField.getText().equals(sketchApplet.getLastSavedImagePath()))
+                    setLastSavedImage.setEnabled(false);
+            }
+        });
 
+        freezeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sketchApplet.freezeImg();
+                unfreezeButton.setEnabled(true);
+            }
+        });
+
+        unfreezeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sketchApplet.unfreezeImg();
+                unfreezeButton.setEnabled(false);
+            }
+        });
+
+        //List for the PixelSelectors
         selectorList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 //because this fires twice when clicked (randomSelector draws twice which looks unclean :(
-                if(e.getValueIsAdjusting())
+                if (e.getValueIsAdjusting())
                     return;
                 updateInProgress = true;
                 pixelSorter.setSelector(selectorList.getModel().getElementAt(selectorList.getSelectedIndex()));
@@ -154,7 +192,8 @@ public class OptionPanel extends JFrame {
             }
         });
 
-        //TODO: new PFrame that shows only the mask
+        //TODO: new PFrame that shows only the mask?
+        //Mask options
         showMaskCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -185,7 +224,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
-
+        //SLIDERS AND SPINNERS for the values, woo!
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -231,6 +270,7 @@ public class OptionPanel extends JFrame {
             }
         });
 
+        //Image file selection
         pathField.setEditable(false);
         selectButton.addActionListener(new ActionListener() {
             @Override
@@ -240,11 +280,14 @@ public class OptionPanel extends JFrame {
         });
 
         //Set values on start
+        saveAsButton.setEnabled(false);     //It's not yet implemented lmao
+        setLastSavedImage.setEnabled(false); //Gets enabled when save is pressed at least once
+        unfreezeButton.setEnabled(false);   //Gets enabled when freeze is pressed
         windowHeightSpinner.setValue(600);
         ButtonDOWN.doClick(); //set Direction to DOWN
         selectorList.setSelectedIndex(1); //Set Default Selector (Hue)
-//        originalSizeCheckBox.doClick(); //Sets Default ImageSize to OriginalSize
-        checkBoxWhiteMask.setSelected(false);
+//        originalSizeCheckBox.doClick(); //if uncommented  Sets Default ImageSize to OriginalSize
+        checkBoxWhiteMask.setSelected(true); //Set Mask to black and white when false
         checkBoxWhiteMask.doClick();
         showMaskCheckBox.setSelected(true);
         showMaskCheckBox.doClick();
@@ -256,9 +299,7 @@ public class OptionPanel extends JFrame {
         //END OF YEAH
         pack();
         setVisible(true);
-
     }
-
 
     private void updateSelectorValueStart(int newValue) {
         //check if this slider or spinner would go above the other spinner
@@ -318,10 +359,14 @@ public class OptionPanel extends JFrame {
                 String filename = fd.getFile();
                 String path = fd.getDirectory() + filename;
                 System.out.println(path);
-                pathField.setText(path);
-                pathField.setSelectionEnd(path.length() - 1);
-                if(!sketchApplet.loadAndSetImg(path))
+                // If the chosen file was invalid, try again!
+                if (!sketchApplet.loadAndSetImg(path)) {
                     chooseFile();
+                } else {
+                    pathField.setText(path);
+                    pathField.setSelectionEnd(path.length() - 1);
+                    unfreezeButton.setEnabled(false);
+                }
             }
         } catch (Exception ex) {
             System.out.println("Error :(\n" + ex);

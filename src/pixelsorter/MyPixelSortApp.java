@@ -192,7 +192,7 @@ public class MyPixelSortApp extends PApplet {
         drawAgain();
     }
 
-    public boolean isShowMask() {
+    public boolean isMaskShown() {
         return showMask;
     }
 

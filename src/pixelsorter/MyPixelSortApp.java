@@ -3,7 +3,6 @@ package pixelsorter;
 import processing.core.*;
 import processing.event.*;
 import selectors.DefaultSelector;
-
 import javax.swing.*;
 import java.nio.file.Paths;
 
@@ -166,8 +165,11 @@ public class MyPixelSortApp extends PApplet {
 
     public void mouseWheel(MouseEvent e) {
         int val = -e.getCount();
-        sorter.getSelector().shiftRange(val * 3);
-//        println((sorter.getSelector()).getStart() + " : " + (sorter.getSelector()).getEnd());
+        println(key, keyCode);
+        if (keyPressed && keyCode == SHIFT)
+            sorter.getSelector().shiftRange(val * 10);
+        else
+            sorter.getSelector().shiftRange(val);
         optionPanel.updateValueUI();
         drawAgain();
     }
@@ -178,7 +180,11 @@ public class MyPixelSortApp extends PApplet {
     }
 
     public void keyPressed() {
-        showMask = !showMask;
+        if (key == ' ') {
+            showMask = !showMask;
+            optionPanel.updateUI();
+            drawAgain();
+        }
     }
 
     public void mousePressed() {

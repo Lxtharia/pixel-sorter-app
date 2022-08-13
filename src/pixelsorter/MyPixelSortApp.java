@@ -5,6 +5,7 @@ import processing.event.*;
 import selectors.DefaultSelector;
 
 import javax.swing.*;
+import java.nio.file.Paths;
 
 public class MyPixelSortApp extends PApplet {
     /********
@@ -22,6 +23,7 @@ public class MyPixelSortApp extends PApplet {
     private PImage baseImg;
     private PImage sortedImg;
     private String lastSavedImagePath = null;
+    private String currentFilename;
     PixelSorter sorter;
     OptionPanel optionPanel;
     private int shouldSurfaceHeight;
@@ -59,16 +61,21 @@ public class MyPixelSortApp extends PApplet {
 
 
     public boolean loadAndSetImg(String filepath) {
-        //TODO: store filename in a variable to use in exported filename
-        //because the shitty FileDialog can't hide these and using JFileChooser is even worse //what
+        //because the shitty FileDialog can't hide files, so we need to check manually which file type was selected
         if (filepath.endsWith(".png") || filepath.endsWith(".jpg") || filepath.endsWith(".tga") || filepath.endsWith(".gif") || filepath.endsWith(".jpeg")) {
             PImage originalSizedImg = loadImage(filepath);
+            //get filename
+            String filename = Paths.get(filepath).getFileName().toString();
+            //strip extension
+            currentFilename = filename.substring(0, filename.lastIndexOf('.'));
+            //if something went wrong we choose again
             return setImg(originalSizedImg);
         } else return false;
     }
 
-    //IMAGE TOSSING
+    //IMAGE TOSSING SECTION
     public boolean setImg(PImage newImg) {
+        //set a new originalImage
         if (newImg == null) return false;
         originalImg = newImg.copy();
         baseImg = newImg.copy();
@@ -78,12 +85,13 @@ public class MyPixelSortApp extends PApplet {
     }
 
     public void freezeImg() {
-        //Save the image before setting it to the currently sorted image
+        //Set the base image to the currently displayed (sorted) image
         baseImg = sortedImg.copy();
         drawAgain();
     }
 
     public void unfreezeImg() {
+        //Set the base image to the originally loaded image
         baseImg = originalImg.copy();
         drawAgain();
     }
@@ -119,15 +127,6 @@ public class MyPixelSortApp extends PApplet {
         drawAgain();
     }
 
-    public void setSurfaceSizeOneToOne(boolean fullSize) {
-        surfaceSizeIsOneToOne = fullSize;
-        updateSurfaceSize();
-    }
-
-    public boolean surfaceSizeIsOneToOne() {
-        return surfaceSizeIsOneToOne;
-    }
-
     public boolean resizeSurfaceToHeight(int newHeight) {
         if (newHeight >= 128 && newHeight <= 3000) {
             //Resized
@@ -140,21 +139,24 @@ public class MyPixelSortApp extends PApplet {
         }
     }
 
+    public void setSurfaceSizeOneToOne(boolean fullSize) {
+        surfaceSizeIsOneToOne = fullSize;
+        updateSurfaceSize();
+    }
+
     public int getSurfaceHeight() {
         return shouldSurfaceHeight;
     }
 
-//    private void resizeImg(int newHeight) {
-//        //for low res stuff idk
-//        originalImg = originalSizedImg.copy();
-//        originalImg.resize((newHeight * originalSizedImg.width) / originalSizedImg.height, newHeight);
-//        //the ratio stays the same hOh
-//    }
+    public boolean surfaceSizeIsOneToOne() {
+        return surfaceSizeIsOneToOne;
+    }
 
 
     public boolean saveImg() {
         //TODO: full path for the path-field bar
-        String savePathName = "export" + "_" + hour() + minute() + second() + "_" + sorter.getXDirection().toString() + sorter.getYDirection().toString() + "_" + sortedImg.hashCode() + ".png";
+        //String savePathName = "export" + "_" + hour() + minute() + second() + "_" + sorter.getXDirection().toString() + sorter.getYDirection().toString() + "_" + sortedImg.hashCode() + ".png";
+        String savePathName = "exp_" + currentFilename + "_" + hour() + minute() + second() + millis() % 1000 + ".png";
         savePathName = sketchPath(savePathName);
         lastSavedImagePath = savePathName;
         return sortedImg.save(savePathName);

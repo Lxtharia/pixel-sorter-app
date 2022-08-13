@@ -319,7 +319,7 @@ public class OptionPanel extends JFrame {
         spinner1.setValue(newValue);
     }
 
-    //TODO: slider model!!
+    //TODO: no clue if a slider model would make simpler or not H
     //sets slider2 and spinner2
     private void updateSelectorValueEnd(int newValue) {
         //check if this slider2 or spinner2 would go below the other sliders value

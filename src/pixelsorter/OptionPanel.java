@@ -344,6 +344,13 @@ public class OptionPanel extends JFrame {
         spinner2.setValue(pixelSorter.getSelector().getEnd());
     }
 
+    //updates every UI element to the actual values from whereever cause i got no model lmao
+    public void updateUI() {
+        updateValueUI();
+        showMaskCheckBox.setSelected(sketchApplet.isMaskShown());
+        //TODO: All the other checkboxes and what-not but I'm too lazy rn
+    }
+
     private void createUIComponents() {
         selectorList = new JList<>(new myListModel());
         selectorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -9,10 +9,12 @@ import java.nio.file.Paths;
 public class MyPixelSortApp extends PApplet {
     /********
 
+     App by Latharia :>
+
+     core functionality by:
      ASDF Pixel Sort
      Kim Asendorf | 2010 | kimasendorf.com
 
-     modified by Latharia :>
      ********/
     // image path is relative to sketch directory
 
@@ -42,17 +44,18 @@ public class MyPixelSortApp extends PApplet {
         shouldSurfaceHeight = 800;
         surfaceSizeIsOneToOne = false;
 
-        //sorter and OptionPanel
-        sorter = new PixelSorter(this, new selectors.HueSelector(125, 200), baseImg);
-        optionPanel = new OptionPanel(this, sorter);
 
         // allow resize and update surface to image dimensions
         //frame.setIconImage(new ImageIcon("icon.png").getImage());
+        surface.setLocation(500, 10);
         surface.setIcon(loadImage("icon.png"));
         surface.setResizable(false);
-        surface.setLocation(500, 10);
         updateSurfaceSize();
         colorMode(HSB, 360, 100, 100);
+
+        //sorter and OptionPanel
+        sorter = new PixelSorter(this, new selectors.HueSelector(125, 200), baseImg);
+        optionPanel = new OptionPanel(this, sorter);
         //TODO:
         // If this is minimized, minimize the other shit (idk how)
         // If the optionPanel is minimized/maximized, min max this (which is on top anyway)
@@ -210,20 +213,6 @@ public class MyPixelSortApp extends PApplet {
         // use only numbers (not variables) for the size() command, Processing 3
         size(1, 1);
         noSmooth();
-    }
-
-    static public void main(String[] passedArgs) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String[] appletArgs = new String[]{"pixelsorter.MyPixelSortApp"};
-        if (passedArgs != null) {
-            PApplet.main(concat(appletArgs, passedArgs));
-        } else {
-            PApplet.main(appletArgs);
-        }
     }
 
     public void drawBackgroundForTransparentImages(boolean selected) {

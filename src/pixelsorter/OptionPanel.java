@@ -186,9 +186,10 @@ public class OptionPanel extends JFrame {
                 if (pixelSorter.getSelector() instanceof ThresholdSelector) {
                     slider.setEnabled(false);
                     spinner1.setEnabled(false);
+                } else {
+                    slider.setEnabled(true);
+                    spinner1.setEnabled(true);
                 }
-                if (pixelSorter.getSelector() instanceof selectors.RandomSelector)
-                    invertMaskCheckBox.setEnabled(false);
             }
         });
 

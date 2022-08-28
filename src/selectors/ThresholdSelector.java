@@ -1,4 +1,4 @@
-package pixelsorter;
+package selectors;
 
 import selectors.DefaultSelector;
 

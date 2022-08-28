@@ -14,7 +14,6 @@ public class MyPixelSortApp extends PApplet {
      core functionality by:
      ASDF Pixel Sort
      Kim Asendorf | 2010 | kimasendorf.com
-
      ********/
     // image path is relative to sketch directory
 
@@ -27,40 +26,61 @@ public class MyPixelSortApp extends PApplet {
     private String currentFilename;
     PixelSorter sorter;
     OptionPanel optionPanel;
-    private int shouldSurfaceHeight;
-    private boolean surfaceSizeIsOneToOne;
+    private int shouldSurfaceHeight = 600;
+    private boolean surfaceSizeIsOneToOne = false;
     private boolean doDraw = true;
     private boolean defaultImgIsSet = true;
     private boolean showMask = false;
     private boolean drawBackground = false;
 
+    //TODO:
+    // If this is minimized, minimize the other shit (idk how)
+    // If the optionPanel is minimized/maximized, min max this (which is on top anyway)
+
     public void setup() {
-        //give all the Selectors this sketch, so they have use Processing functions etc. (it needs to be an instance for colorMode etc)
+        surface.setLocation(500, 10);
+        background(0x2b2b2b);
+        text("Loading...", 20, height-20);
+        // allow resize and update surface to image dimensions
+        println("text displayed");
+        surface.setResizable(false);
+        surface.setIcon(loadImage("icon.png"));
+
+        //pass this sketch to the Selectors, so they can use Processing functions etc. (it needs to be an instance for colorMode etc)
         DefaultSelector.sketch = this;
 
-        //Load and set originalSizedImg and set surface size
+        //Load and set originalSizedImg
         loadAndSetImg("default.png");
         defaultImgIsSet = true;
-        shouldSurfaceHeight = 800;
-        surfaceSizeIsOneToOne = false;
-
-
-        // allow resize and update surface to image dimensions
-        //frame.setIconImage(new ImageIcon("icon.png").getImage());
-        surface.setLocation(500, 10);
-        surface.setIcon(loadImage("icon.png"));
-        surface.setResizable(false);
-        updateSurfaceSize();
-        colorMode(HSB, 360, 100, 100);
-
         //sorter and OptionPanel
         sorter = new PixelSorter(this, new selectors.HueSelector(125, 200), baseImg);
+        //This takes a while to start H
         optionPanel = new OptionPanel(this, sorter);
-        //TODO:
-        // If this is minimized, minimize the other shit (idk how)
-        // If the optionPanel is minimized/maximized, min max this (which is on top anyway)
+
+        //Processing options
+        colorMode(HSB, 360, 100, 100);
     }
 
+
+    //========DRAW========
+    public void drawAgain() {
+        doDraw = true;
+    }
+
+    public void draw() {
+        if (doDraw) {
+            doDraw = false;
+            if (showMask) {
+                image(sorter.getMaskedImage(baseImg), 0, 0, width, height);
+            } else {
+                if (drawBackground) background(0);
+                sortedImg = sorter.sortImg(baseImg);
+                image(sortedImg, 0, 0, width, height);
+            }
+        }
+    }
+
+    //======IMAGES AND FREEZING======
 
     public boolean loadAndSetImg(String filepath) {
         //because the shitty FileDialog can't hide files, so we need to check manually which file type was selected
@@ -75,7 +95,6 @@ public class MyPixelSortApp extends PApplet {
         } else return false;
     }
 
-    //IMAGE TOSSING SECTION
     public boolean setImg(PImage newImg) {
         //set a new originalImage
         if (newImg == null) return false;
@@ -96,25 +115,6 @@ public class MyPixelSortApp extends PApplet {
         //Set the base image to the originally loaded image
         baseImg = originalImg.copy();
         drawAgain();
-    }
-
-
-    //========DRAW========
-    public void drawAgain() {
-        doDraw = true;
-    }
-
-    public void draw() {
-        if (doDraw) {
-            doDraw = false;
-            if (showMask) {
-                image(sorter.getMaskedImage(baseImg), 0, 0, width, height);
-            } else {
-                if (drawBackground) background(0);
-                sortedImg = sorter.sortImg(baseImg);
-                image(sortedImg, 0, 0, width, height);
-            }
-        }
     }
 
     //=======SURFACE CONFUSION=======
@@ -211,7 +211,8 @@ public class MyPixelSortApp extends PApplet {
 
     public void settings() {
         // use only numbers (not variables) for the size() command, Processing 3
-        size(1, 1);
+        size(757, 600);
+//        size(1,1);
         noSmooth();
     }
 

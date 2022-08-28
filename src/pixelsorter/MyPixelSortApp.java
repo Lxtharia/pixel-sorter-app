@@ -42,7 +42,6 @@ public class MyPixelSortApp extends PApplet {
         background(0x2b2b2b);
         text("Loading...", 20, height-20);
         // allow resize and update surface to image dimensions
-        println("text displayed");
         surface.setResizable(false);
         surface.setIcon(loadImage("icon.png"));
 

@@ -230,7 +230,8 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {
                     updateInProgress = true;
-                    updateSelectorValueStart(slider.getValue());
+                    pixelSorter.getSelector().setStart(slider.getValue());
+                    updateValueUI();
                     updateInProgress = false;
                 }
             }
@@ -241,7 +242,8 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {
                     updateInProgress = true;
-                    updateSelectorValueEnd(slider2.getValue());
+                    pixelSorter.getSelector().setEnd(slider2.getValue());
+                    updateValueUI();
                     updateInProgress = false;
                 }
             }
@@ -252,7 +254,8 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {
                     updateInProgress = true;
-                    updateSelectorValueStart((Integer) spinner1.getValue());
+                    pixelSorter.getSelector().setStart((Integer) spinner1.getValue());
+                    updateValueUI();
                     updateInProgress = false;
                 }
             }
@@ -264,7 +267,8 @@ public class OptionPanel extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 if (!updateInProgress) {     //so if something else changes values, this wont fire
                     updateInProgress = true;        //Hello, im the one updating :>
-                    updateSelectorValueEnd((Integer) spinner2.getValue());
+                    pixelSorter.getSelector().setEnd((Integer) spinner2.getValue());
+                    updateValueUI();
                     updateInProgress = false;
                 }
             }
@@ -294,47 +298,13 @@ public class OptionPanel extends JFrame {
         checkBoxDrawBackground.setSelected(false);
         checkBoxDrawBackground.doClick(); //To trigger the action listener
 
+        updateInProgress = true;
         updateValueUI();
+        updateInProgress = false;
 
         //END OF YEAH
         pack();
         setVisible(true);
-    }
-
-    private void updateSelectorValueStart(int newValue) {
-        //check if this slider or spinner would go above the other spinner
-        if (newValue >= pixelSorter.getSelector().getEnd()) {
-            //if so, push the others one up
-            updateSelectorValueEnd(newValue + 0);
-            newValue--; // uncommenting this and removing the +1 above makes it so
-/*          the value that would be pushed to be dominant (spinners cant push, sliders can't push the other below 0)
-            If they CAN push, it stackoverflows because the spinner can overflow the integers */
-        }
-        pixelSorter.getSelector().setStart(newValue);
-        //If something changed
-        spinner2.setValue(pixelSorter.getSelector().getEnd());
-        slider2.setValue(pixelSorter.getSelector().getEnd());
-        //update these two (one of these called this function :>)
-        slider.setValue(newValue);
-        spinner1.setValue(newValue);
-    }
-
-    //TODO: no clue if a slider model would make simpler or not H
-    //sets slider2 and spinner2
-    private void updateSelectorValueEnd(int newValue) {
-        //check if this slider2 or spinner2 would go below the other sliders value
-        if (newValue <= pixelSorter.getSelector().getStart()) {
-            //if so, push the others below
-            updateSelectorValueStart(newValue - 0);
-            newValue++;
-        }
-        pixelSorter.getSelector().setEnd(newValue);
-        //If something changed
-        spinner1.setValue(pixelSorter.getSelector().getStart());
-        slider.setValue(pixelSorter.getSelector().getStart());
-        //update these two (one of these called this function :>)
-        slider2.setValue(newValue);
-        spinner2.setValue(newValue);
     }
 
     public void updateValueUI() {

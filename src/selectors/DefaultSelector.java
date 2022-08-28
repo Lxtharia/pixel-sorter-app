@@ -25,8 +25,8 @@ public abstract class DefaultSelector {
         this(start, end, 0, 100);
     }
 
-    public DefaultSelector(){
-        this(0,50);
+    public DefaultSelector() {
+        this(0, 50);
     }
 
     //=========================
@@ -54,8 +54,13 @@ public abstract class DefaultSelector {
         return this.start;
     }
 
-    public void setStart(int start) {
-        this.start = start;
+    public void setStart(int newStart) {
+        this.start = newStart;
+
+        if (start >= end) {
+            end = start;
+            start = end - 1;
+        }
         sketch.drawAgain();
     }
 
@@ -63,11 +68,15 @@ public abstract class DefaultSelector {
         return this.end;
     }
 
-    public void setEnd(int end) {
-        this.end = end;
+    public void setEnd(int newEnd) {
+        this.end = newEnd;
+
+        if (start >= end) {
+            start = end;
+            this.end = start + 1;
+        }
         sketch.drawAgain();
     }
-
 
     public int getMin() {
         return min;
